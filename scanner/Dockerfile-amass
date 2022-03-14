@@ -1,0 +1,27 @@
+# Build Amass
+FROM golang:1.16-alpine as build
+
+RUN apk --no-cache add git
+WORKDIR /go/src/github.com/OWASP/Amass
+
+COPY ./Amass .
+RUN go install -v ./...
+
+FROM python:3.9.10-alpine
+RUN apk --no-cache add ca-certificates
+COPY --from=build /go/bin/amass /bin/amass
+ENV HOME /
+RUN  addgroup scanner && adduser scanner -D -G scanner
+RUN mkdir /.config
+RUN mkdir /.config/amass
+RUN chown -R scanner:scanner /.config
+
+COPY amass-scanner/ /scanner
+WORKDIR /scanner
+RUN pip install -r reqs.txt
+RUN chown -R scanner:scanner /scanner
+RUN chown scanner:scanner /bin/amass
+RUN chmod +x /bin/amass
+USER scanner
+ENTRYPOINT [ "python" ]
+CMD [ "run.py" ]

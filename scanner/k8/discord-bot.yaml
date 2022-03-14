@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discord-bot-amass
+  labels:
+    app: discord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discord
+  template:
+    metadata:
+      labels:
+        app: discord
+    spec:
+      imagePullSecrets:
+        - name: acr-secret
+      containers:
+        - name: discord
+          envFrom:
+            - secretRef:
+                name: discord-bot-key
+          image: farcast22/amass-discord:latest
+          imagePullPolicy: Always

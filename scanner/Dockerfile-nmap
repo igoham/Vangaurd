@@ -1,0 +1,12 @@
+FROM python:3.9
+RUN apt-get update && apt-get upgrade
+RUN apt-get install ca-certificates nmap -y
+
+RUN adduser scanner
+COPY nmap-scanner/ /scanner
+WORKDIR /scanner
+RUN pip install -r reqs.txt
+RUN chown -R scanner:scanner /scanner
+USER scanner
+ENTRYPOINT [ "python" ]
+CMD [ "run.py" ]

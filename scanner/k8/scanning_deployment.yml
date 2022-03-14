@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amass
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: amass
+  template:
+    metadata:
+      labels:
+        app: amass
+    spec:
+      containers:
+      - name: amass
+        envFrom:
+          - secretRef:
+              name: elastic-creds
+        imagePullPolicy: Always
+        image: farcast22/amass:latest
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nmap
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nmap-scanner
+  template:
+    metadata:
+      labels:
+        app: nmap-scanner
+    spec:
+      containers:
+      - name: nmap
+        envFrom:
+          - secretRef:
+              name: elastic-creds
+        imagePullPolicy: Always
+        image: farcast22/nmap:latest
+

@@ -1,0 +1,14 @@
+FROM python:3.9
+RUN apt-get update && apt-get upgrade
+RUN apt-get install ca-certificates
+
+ENV HOME /
+RUN adduser discord
+
+COPY discord/ /discord
+WORKDIR /discord
+RUN pip install -r reqs.txt
+RUN chown -R discord:discord /discord
+USER discord
+ENTRYPOINT [ "python" ]
+CMD [ "bot.py" ]
